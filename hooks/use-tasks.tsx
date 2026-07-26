@@ -4,8 +4,14 @@
  * Owns the in-memory task list, hydrates it once on mount, and writes back to
  * storage on every mutation. Screens and components consume this hook and never
  * touch AsyncStorage directly.
+ *
+ * The state is shared through `TasksProvider` (wrapped at the root layout) so
+ * that every screen — the list and the Add Task screen — reads and mutates the
+ * same in-memory list. Without a shared provider, each screen calling the hook
+ * would hold its own copy and a task added on one screen would not appear on
+ * another until a re-hydrate.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { loadTasks, saveTasks } from '@/lib/storage/tasks-storage';
 import type { Task } from '@/lib/types/task';
@@ -27,7 +33,8 @@ export type UseTasks = {
   deleteTask: (id: string) => void;
 };
 
-export function useTasks(): UseTasks {
+/** Internal: the actual state + persistence logic, instantiated once by the provider. */
+function useTasksState(): UseTasks {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   // Guards the initial hydrate so it never overwrites stored data on first mount.
@@ -82,4 +89,21 @@ export function useTasks(): UseTasks {
   }, []);
 
   return { tasks, isLoading, addTask, toggleTask, deleteTask };
+}
+
+const TasksContext = createContext<UseTasks | null>(null);
+
+/** Provides one shared task list to the whole app. Wrap the root navigator. */
+export function TasksProvider({ children }: { children: React.ReactNode }) {
+  const value = useTasksState();
+  return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>;
+}
+
+/** Consume the shared task state. Must be used within a `TasksProvider`. */
+export function useTasks(): UseTasks {
+  const ctx = useContext(TasksContext);
+  if (!ctx) {
+    throw new Error('useTasks must be used within a TasksProvider');
+  }
+  return ctx;
 }

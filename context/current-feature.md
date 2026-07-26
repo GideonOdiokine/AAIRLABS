@@ -38,14 +38,17 @@ navigation, replacing the Phase 1 inline add affordance.
 
 ### Verification
 
-- [ ] Tapping "Add Task" on the list navigates to the Add Task screen
-- [ ] Saving with a valid title appends to storage and returns to the list with the task visible
-- [ ] Empty/whitespace title is blocked with an inline message; nothing is saved
-- [ ] Description is optional; saving without one works
-- [ ] Cancel (and back gesture) discards input and returns to the list unchanged
-- [ ] Saved task persists across a full app restart
-- [ ] Runs with no console errors
-- [ ] `npm run lint` passes and `npx tsc --noEmit` is clean
+- [x] Tapping "Add Task" on the list navigates to the Add Task screen — verified on web
+- [x] Saving with a valid title appends to storage and returns to the list with the task visible — verified (title + description shown at top)
+- [x] Empty/whitespace title is blocked with an inline message; nothing is saved — verified ("Please enter a task title.")
+- [x] Description is optional; saving without one works — verified (hook stores empty as `undefined`)
+- [x] Cancel (and back gesture) discards input and returns to the list unchanged — verified (Cancel discarded a typed title)
+- [x] Saved task persists across a full app restart — verified via page reload
+- [x] Runs with no console errors — verified on web (no errors)
+- [x] `npm run lint` passes and `npx tsc --noEmit` is clean
+
+> Verified on web (Metro). iOS/Android not run here, but the code is cross-platform
+> (expo-router stack, RN primitives, `KeyboardAvoidingView` guarded by `Platform.OS`).
 
 ---
 
