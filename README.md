@@ -12,7 +12,7 @@ and dictate new tasks by voice through a floating action button.
   titles are blocked); tap to toggle; delete with confirmation.
 - **Local persistence** — every change is saved to `AsyncStorage`; the list is
   restored on relaunch. No backend, no account.
-- **Voice input** — a mic FAB records a phrase, transcribes it (OpenAI), and
+- **Voice input** — a mic FAB records a phrase, transcribes it (Groq Whisper), and
   splits natural dictation ("buy provisions and call mom") into separate tasks.
 - **Bonus (Phase 4):**
   - **Due dates + sorting** — pick a due date on Add Task; the list sorts dated
@@ -105,9 +105,10 @@ npm test
 
 ## Voice input setup (API key)
 
-The voice FAB records a short clip, sends it to OpenAI's speech-to-text API, and
-splits the transcript into tasks. It needs an API key, read from an Expo public
-environment variable — the key is **never** committed.
+The voice FAB records a short clip, sends it to Groq's speech-to-text API
+(OpenAI-compatible Whisper, free tier), and splits the transcript into tasks. It
+needs an API key, read from an Expo public environment variable — the key is
+**never** committed.
 
 1. Copy the example env file and add your key:
 
@@ -115,10 +116,11 @@ environment variable — the key is **never** committed.
    cp .env.example .env
    ```
 
-2. Edit `.env` and set your OpenAI API key:
+2. Get a free API key at [console.groq.com](https://console.groq.com) (no credit
+   card required), then edit `.env` and set it:
 
    ```bash
-   EXPO_PUBLIC_OPENAI_API_KEY=sk-...your-key...
+   EXPO_PUBLIC_GROQ_API_KEY=gsk_...your-key...
    ```
 
 3. Restart the dev server so Expo picks up the new value (`npx expo start -c`).
