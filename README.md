@@ -28,6 +28,13 @@ and dictate new tasks by voice through a floating action button.
 Captured on an iOS Simulator (iPhone 14 Pro, light) and an Android emulator
 (Pixel, dark), shown side by side. Full images live in [`/screenshots`](./screenshots).
 
+### Code & design
+
+The app source in the editor next to the running iOS build (dark mode) — Tasks
+list with search, All / Active / Done filters, due-date badges, and the voice FAB.
+
+![Code and design side by side](./screenshots/code+design.png)
+
 ### Task list — empty state & populated list
 
 Empty state ("No tasks yet") on Android; a populated list on iOS with due-date
