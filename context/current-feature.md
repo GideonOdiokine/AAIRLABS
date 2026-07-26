@@ -2,48 +2,54 @@
 
 Status: In progress
 
-## Phase 1 — Task List + Persistence
+## Phase 2 — Add Task Screen
 
-Spec: `context/features/phase-1-task-list.md`
+Spec: `context/features/phase-2-add-task.md`
 Feature breakdown: `context/features/todo-app-spec-index.md`
-Branch: `feature/phase-1`
+Branch: `feature/phase-2`
 
 ### Scope
 
-First shippable slice: the Task List screen plus local persistence.
+Second shippable slice: a dedicated, validated Add Task screen reached by stack
+navigation, replacing the Phase 1 inline add affordance.
 
-- `Task` type — single source of truth (`lib/types/task.ts`)
-- AsyncStorage read/write isolated in `lib/storage/tasks-storage.ts`
-- `use-tasks` hook: hydrate on start, expose `tasks`, `isLoading`, `addTask`, `toggleTask`, `deleteTask`
-- Task List screen (`app/index.tsx`) — thin, delegates to the hook
-- `FlatList` wrapper + empty-state switch, task row (toggle / title / optional description / delete), completion toggle
-- Minimal inline "add task" affordance so the flow is testable end to end (full Add Task screen is Phase 2)
-- Loading / empty / populated / completed-row states; theme tokens only (no hardcoded hex)
+- `app/add-task.tsx` — Add Task screen (thin): local form state, persistence via `useTasks`
+- Title input (required, trimmed) + description input (optional, multiline, trimmed → `undefined` when empty)
+- Inline validation: empty/whitespace title blocks save and shows a message near the field
+- Save appends via `useTasks.addTask` then `router.back()`; cancel / back gesture discards
+- `app/_layout.tsx` — register `add-task` as a pushed route (list stays the initial route)
+- `app/index.tsx` — replace the inline add bar with a primary "Add Task" entry point that navigates
+- Reusable UI primitives extracted to `components/ui/`: `PrimaryButton`, `TextField`
 
-> **Note on paths & SDK:** the repo uses root-level directories with the `@/` alias (no `src/` prefix), so the spec's `src/app/...` maps to `app/...`. The project is pinned to **Expo SDK 54** (RN 0.81) per `AGENTS.md`; APIs are confirmed against <https://docs.expo.dev/versions/v54.0.0/>, not the SDK 57 the older overview docs mention.
+> **Shared task state:** `useTasks` is lifted into a `TasksProvider` (in `hooks/use-tasks.ts`)
+> wrapped at the root layout, so the list and Add Task screens share one in-memory
+> instance. Without this, each screen's hook would hold a separate list and a task
+> added on the Add Task screen would not appear after `router.back()`. No new
+> persistence code — the Phase 1 storage/hook logic is reused unchanged.
 
-> **Structural change:** the demo `(tabs)` group is removed and the root navigator becomes a single stack with the Task List as the initial route, matching the spec's two-screen flow (Task List → Add Task in Phase 2).
+> **Note on paths & SDK:** the repo uses root-level directories with the `@/` alias
+> (no `src/` prefix), so the spec's `src/app/...` maps to `app/...`. Pinned to
+> **Expo SDK 54** (RN 0.81) per `AGENTS.md`.
 
 ### Out of scope (this phase)
 
-- Add Task screen (Phase 2)
 - Voice FAB and transcription (Phase 3)
-- All bonus features (Phase 4)
+- Editing existing tasks; due-date picker (Phase 4 bonus)
 
 ### Verification
 
-- [x] Adding a task appends it and it appears in the list — verified on web
-- [x] Toggling flips completed state with clear visual distinction — verified (green check + strikethrough + muted)
-- [x] Deleting removes the task after confirmation — verified (web `window.confirm`; native uses `Alert`)
-- [x] List survives a full app restart — verified via page reload (tasks + completed state rehydrated)
-- [x] Empty state shows when there are no tasks — verified
-- [x] Runs with no console errors — verified on web (no errors in console)
-- [x] `npm run lint` passes and `npx tsc --noEmit` is clean
-
-> Verified thoroughly on web (Metro). iOS/Android not yet run here, but the code is cross-platform (RN `Alert` on native, `window.confirm` on web; SafeAreaView, FlatList, standard RN primitives).
+- [ ] Tapping "Add Task" on the list navigates to the Add Task screen
+- [ ] Saving with a valid title appends to storage and returns to the list with the task visible
+- [ ] Empty/whitespace title is blocked with an inline message; nothing is saved
+- [ ] Description is optional; saving without one works
+- [ ] Cancel (and back gesture) discards input and returns to the list unchanged
+- [ ] Saved task persists across a full app restart
+- [ ] Runs with no console errors
+- [ ] `npm run lint` passes and `npx tsc --noEmit` is clean
 
 ---
 
 ## History
 
-- **Phase 1 — Task List + Persistence** (in progress, branch `feature/phase-1`): implementing the `Task` model, AsyncStorage storage module, `use-tasks` hook, and the Task List screen with rows, toggle, delete, and empty state.
+- **Phase 1 — Task List + Persistence** (complete, branch `feature/phase-1`): `Task` model, AsyncStorage storage module, `use-tasks` hook, Task List screen with rows, toggle, delete, and empty state.
+- **Phase 2 — Add Task Screen** (in progress, branch `feature/phase-2`): dedicated validated Add Task route, shared `TasksProvider`, reusable `PrimaryButton`/`TextField`, list entry point wired to navigation.
