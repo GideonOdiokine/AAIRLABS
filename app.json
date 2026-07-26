@@ -38,6 +38,12 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow AAIRLABS to use the microphone to add tasks by voice."
+        }
       ]
     ],
     "experiments": {

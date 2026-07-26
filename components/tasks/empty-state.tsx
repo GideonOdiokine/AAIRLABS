@@ -1,6 +1,8 @@
 /**
- * EmptyState — shown when there are no tasks. An intentional, calm placeholder
- * rather than a blank screen.
+ * EmptyState — shown when the list has nothing to render. An intentional, calm
+ * placeholder rather than a blank screen. Defaults to the "no tasks yet" copy,
+ * but accepts overrides so the list can show a distinct "no matches" state when
+ * a search/filter hides everything (Phase 4 bonus).
  */
 import { StyleSheet, View } from 'react-native';
 
@@ -9,16 +11,26 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Spacing } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-export function EmptyState() {
+type IconName = 'checkmark' | 'magnifyingglass';
+
+type EmptyStateProps = {
+  title?: string;
+  subtitle?: string;
+  icon?: IconName;
+};
+
+export function EmptyState({
+  title = 'No tasks yet',
+  subtitle = 'Add one to get started.',
+  icon = 'checkmark',
+}: EmptyStateProps) {
   const muted = useThemeColor({}, 'textMuted');
 
   return (
     <View style={styles.container} accessibilityRole="text">
-      <IconSymbol name="checkmark" size={40} color={muted} />
-      <ThemedText style={styles.title}>No tasks yet</ThemedText>
-      <ThemedText style={[styles.subtitle, { color: muted }]}>
-        Add one to get started.
-      </ThemedText>
+      <IconSymbol name={icon} size={40} color={muted} />
+      <ThemedText style={styles.title}>{title}</ThemedText>
+      <ThemedText style={[styles.subtitle, { color: muted }]}>{subtitle}</ThemedText>
     </View>
   );
 }

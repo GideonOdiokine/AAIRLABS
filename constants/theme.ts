@@ -25,6 +25,7 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     success: '#2E7D4F', // completed check
     danger: '#C43D2D', // delete / destructive
+    warning: '#B87400', // due-soon (readable amber on light surfaces)
   },
   dark: {
     text: '#ECEDEE',
@@ -41,6 +42,7 @@ export const Colors = {
     tabIconSelected: tintColorDark,
     success: '#5DBB84',
     danger: '#E5695A',
+    warning: '#F4B740', // due-soon (bright amber on dark surfaces)
   },
 };
 

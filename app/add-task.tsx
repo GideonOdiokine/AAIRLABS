@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DueDatePicker } from '@/components/ui/due-date-picker';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { TextField } from '@/components/ui/text-field';
 import { ThemedText } from '@/components/themed-text';
@@ -29,6 +30,8 @@ export default function AddTaskScreen() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  // Optional due date (Phase 4 bonus); null means undated.
+  const [dueDate, setDueDate] = useState<number | null>(null);
   // Error is only surfaced after an attempted save, not while first typing.
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +45,7 @@ export default function AddTaskScreen() {
       return;
     }
     // Description is optional; the hook trims it and stores empty as undefined.
-    addTask(trimmedTitle, description);
+    addTask(trimmedTitle, description, dueDate ?? undefined);
     router.back();
   };
 
@@ -93,6 +96,8 @@ export default function AddTaskScreen() {
             multiline
             accessibilityLabel="Task description, optional"
           />
+
+          <DueDatePicker value={dueDate} onChange={setDueDate} />
         </ScrollView>
 
         <View style={styles.footer}>

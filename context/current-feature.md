@@ -1,58 +1,74 @@
 # Current Feature
 
-Status: In progress
+Status: Complete
 
-## Phase 2 — Add Task Screen
+## Phase 4 — Bonus
 
-Spec: `context/features/phase-2-add-task.md`
+Spec: `context/features/phase-4-bonus.md`
 Feature breakdown: `context/features/todo-app-spec-index.md`
-Branch: `feature/phase-2`
+Branch: `feature/phase-4`
 
 ### Scope
 
-Second shippable slice: a dedicated, validated Add Task screen reached by stack
-navigation, replacing the Phase 1 inline add affordance.
+Final, additive slice. Every item is extra credit and must not regress the core
+add / toggle / delete / persist / voice flows. Implementing the **full** bonus set:
 
-- `app/add-task.tsx` — Add Task screen (thin): local form state, persistence via `useTasks`
-- Title input (required, trimmed) + description input (optional, multiline, trimmed → `undefined` when empty)
-- Inline validation: empty/whitespace title blocks save and shows a message near the field
-- Save appends via `useTasks.addTask` then `router.back()`; cancel / back gesture discards
-- `app/_layout.tsx` — register `add-task` as a pushed route (list stays the initial route)
-- `app/index.tsx` — replace the inline add bar with a primary "Add Task" entry point that navigates
-- Reusable UI primitives extracted to `components/ui/`: `PrimaryButton`, `TextField`
+1. **Due dates + sorting** — a cross-platform, chip-based due-date picker on the Add
+   Task screen (Today / Tomorrow / This weekend / Next week / clear), stored in the
+   existing `Task.dueDate` field. The list sorts dated tasks first (soonest due at
+   the top), then undated by newest. Each row shows a due badge whose color reflects
+   status: `danger` for overdue, `warning` for due soon (today/tomorrow), muted otherwise.
+2. **Search / filter** — a filter bar on the list screen: a search box (matches title
+   and description) plus All / Active / Done chips. No new route; a distinct
+   "no matches" empty state when a query hides everything.
+3. **Light / dark theme toggle** — a `ThemePreferenceProvider` holding a persisted
+   `light | dark | system` preference; a header toggle cycles the three. All colors
+   already flow from the theme, so this is a resolver + toggle, not a restyle.
+4. **Unit tests** — Jest (`jest-expo` preset) covering the two highest-value pure
+   modules: `lib/voice/split-tasks.ts` (single/multi/filler/commas/"then"/empty) and
+   `lib/storage/tasks-storage.ts` (round-trip, corrupt-data fallback, field coercion).
+5. **Animations** — reanimated row enter + layout (reorder) transitions and an animated
+   completion check, all gated by the OS reduced-motion setting.
 
-> **Shared task state:** `useTasks` is lifted into a `TasksProvider` (in `hooks/use-tasks.ts`)
-> wrapped at the root layout, so the list and Add Task screens share one in-memory
-> instance. Without this, each screen's hook would hold a separate list and a task
-> added on the Add Task screen would not appear after `router.back()`. No new
-> persistence code — the Phase 1 storage/hook logic is reused unchanged.
+- New: `hooks/use-theme-preference.tsx`, `lib/dates.ts`, `components/ui/due-date-picker.tsx`,
+  `components/ui/theme-toggle.tsx`, `components/tasks/task-filter-bar.tsx`,
+  `hooks/use-visible-tasks.ts`, tests under `__tests__/`.
+- Changed: `constants/theme.ts` (+`warning` token), `hooks/use-theme-color.ts` &
+  `task-toggle.tsx` (resolve via preference), `app/_layout.tsx` (wrap provider),
+  `app/add-task.tsx` (due-date field), `app/index.tsx` (filter bar + sorting),
+  `hooks/use-tasks.tsx` (`addTask` accepts `dueDate`), `components/tasks/task-row.tsx`
+  (due badge + enter/layout animation), `components/ui/icon-symbol.tsx` (+ mappings).
+- Dev deps added: `jest-expo`, `jest`, `@types/jest`; `test` script; jest config.
 
-> **Note on paths & SDK:** the repo uses root-level directories with the `@/` alias
-> (no `src/` prefix), so the spec's `src/app/...` maps to `app/...`. Pinned to
-> **Expo SDK 54** (RN 0.81) per `AGENTS.md`.
+> **SDK note:** SDK 54 throughout. Animations use the already-installed
+> `react-native-reanimated` (~4.1.1, `useReducedMotion`, `FadeInDown`, `LinearTransition`);
+> tests use `jest-expo`. The due-date picker is a cross-platform chip control (works in the
+> web preview) rather than a native-only `DateTimePicker`, so no web-breaking dependency.
 
 ### Out of scope (this phase)
 
-- Voice FAB and transcription (Phase 3)
-- Editing existing tasks; due-date picker (Phase 4 bonus)
+- Editing existing tasks; recurring/repeat tasks; reminders/notifications infrastructure
+- A full calendar date picker; multi-field sort UI; per-list themes; screens beyond the two required
 
 ### Verification
 
-- [x] Tapping "Add Task" on the list navigates to the Add Task screen — verified on web
-- [x] Saving with a valid title appends to storage and returns to the list with the task visible — verified (title + description shown at top)
-- [x] Empty/whitespace title is blocked with an inline message; nothing is saved — verified ("Please enter a task title.")
-- [x] Description is optional; saving without one works — verified (hook stores empty as `undefined`)
-- [x] Cancel (and back gesture) discards input and returns to the list unchanged — verified (Cancel discarded a typed title)
-- [x] Saved task persists across a full app restart — verified via page reload
-- [x] Runs with no console errors — verified on web (no errors)
-- [x] `npm run lint` passes and `npx tsc --noEmit` is clean
-
-> Verified on web (Metro). iOS/Android not run here, but the code is cross-platform
-> (expo-router stack, RN primitives, `KeyboardAvoidingView` guarded by `Platform.OS`).
+- [x] Due date: picker sets `dueDate`; list sorts soonest-first; "Due today" amber
+      badge shows — verified on web. (Weekend edge case fixed: a "This weekend"
+      chip that collapses onto "Today" is deduped away.)
+- [x] Search/filter: text search + All/Active/Done narrow the list; a distinct
+      "No matching tasks" state appears — verified on web
+- [x] Theme toggle: cycles light → dark → system and re-themes the whole app
+      (chrome included) — verified light↔dark on web; choice persisted via its own
+      AsyncStorage key. No hardcoded colors (all via theme tokens).
+- [x] Tests: `npm test` green — 21 tests across splitter, due-date helpers, storage
+- [x] Animations: reanimated row enter/reorder + animated check, gated by
+      `useReducedMotion`; no regression to add/toggle/delete/persist/voice — verified on web
+- [x] Runs with no console errors; `npm run lint` passes and `npx tsc --noEmit` is clean
 
 ---
 
 ## History
 
 - **Phase 1 — Task List + Persistence** (complete, branch `feature/phase-1`): `Task` model, AsyncStorage storage module, `use-tasks` hook, Task List screen with rows, toggle, delete, and empty state.
-- **Phase 2 — Add Task Screen** (in progress, branch `feature/phase-2`): dedicated validated Add Task route, shared `TasksProvider`, reusable `PrimaryButton`/`TextField`, list entry point wired to navigation.
+- **Phase 2 — Add Task Screen** (complete, branch `feature/phase-2`): dedicated validated Add Task route, shared `TasksProvider`, reusable `PrimaryButton`/`TextField`, list entry point wired to navigation.
+- **Phase 3 — Voice Input via FAB** (complete, branch `feature/phase-3`): voice FAB, listening/processing/denied/error overlay, `expo-audio` capture, OpenAI transcription, pure natural-language splitter, each task appended via `useTasks`. API key read from env, never committed.

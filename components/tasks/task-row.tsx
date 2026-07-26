@@ -1,16 +1,21 @@
 /**
  * TaskRow — renders a single task: completion toggle, title, optional
- * description, and a delete control. It reports intent (toggle / delete) to the
- * parent and owns no list or storage logic.
+ * description, an optional due-date badge, and a delete control. It reports
+ * intent (toggle / delete) to the parent and owns no list or storage logic.
+ *
+ * The row animates in and shifts smoothly when the list reorders (Phase 4
+ * bonus); both are skipped when the OS reduced-motion setting is on.
  */
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown, LinearTransition, useReducedMotion } from 'react-native-reanimated';
 
 import { TaskToggle } from '@/components/tasks/task-toggle';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Radius, Spacing } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { formatDueDate, getDueStatus } from '@/lib/dates';
 import type { Task } from '@/lib/types/task';
 
 type TaskRowProps = {
@@ -24,11 +29,24 @@ function TaskRowComponent({ task, onToggle, onDelete }: TaskRowProps) {
   const muted = useThemeColor({}, 'textMuted');
   const body = useThemeColor({}, 'textBody');
   const danger = useThemeColor({}, 'danger');
+  const warning = useThemeColor({}, 'warning');
 
+  const reduceMotion = useReducedMotion();
   const stateLabel = task.completed ? 'completed' : 'not completed';
 
+  // Completed tasks always recede; only active tasks surface due urgency.
+  let dueColor = muted;
+  if (task.dueDate != null && !task.completed) {
+    const status = getDueStatus(task.dueDate);
+    if (status === 'overdue') dueColor = danger;
+    else if (status === 'soon') dueColor = warning;
+  }
+
   return (
-    <View style={[styles.row, { backgroundColor: card }]}>
+    <Animated.View
+      entering={reduceMotion ? undefined : FadeInDown.duration(220)}
+      layout={reduceMotion ? undefined : LinearTransition.duration(220)}
+      style={[styles.row, { backgroundColor: card }]}>
       <Pressable
         style={styles.toggleHit}
         onPress={() => onToggle(task.id)}
@@ -53,6 +71,14 @@ function TaskRowComponent({ task, onToggle, onDelete }: TaskRowProps) {
             {task.description}
           </ThemedText>
         ) : null}
+        {task.dueDate != null ? (
+          <View style={styles.due}>
+            <IconSymbol name="calendar" size={13} color={dueColor} />
+            <ThemedText style={[styles.dueLabel, { color: dueColor }]}>
+              {formatDueDate(task.dueDate)}
+            </ThemedText>
+          </View>
+        ) : null}
       </View>
 
       <Pressable
@@ -62,7 +88,7 @@ function TaskRowComponent({ task, onToggle, onDelete }: TaskRowProps) {
         accessibilityLabel={`Delete task: ${task.title}`}>
         <IconSymbol name="trash" size={20} color={danger} />
       </Pressable>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -97,6 +123,16 @@ const styles = StyleSheet.create({
   },
   strikethrough: {
     textDecorationLine: 'line-through',
+  },
+  due: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginTop: 2,
+  },
+  dueLabel: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   deleteHit: {
     padding: Spacing.sm,

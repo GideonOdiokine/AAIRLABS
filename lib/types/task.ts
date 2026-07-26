@@ -13,6 +13,6 @@ export type Task = {
   completed: boolean;
   /** Creation time in epoch milliseconds. */
   createdAt: number;
-  /** Reserved for Phase 4 (due dates); unused in Phase 1. */
+  /** Optional due date — the chosen day's local-midnight epoch ms (Phase 4). */
   dueDate?: number;
 };

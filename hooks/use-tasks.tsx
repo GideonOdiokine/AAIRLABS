@@ -26,7 +26,7 @@ export type UseTasks = {
   /** True until the initial hydrate from storage completes. */
   isLoading: boolean;
   /** Append a new task. Empty/whitespace-only titles are ignored. */
-  addTask: (title: string, description?: string) => void;
+  addTask: (title: string, description?: string, dueDate?: number) => void;
   /** Flip a task's completed state. */
   toggleTask: (id: string) => void;
   /** Remove a task. */
@@ -63,7 +63,7 @@ function useTasksState(): UseTasks {
     void saveTasks(tasks);
   }, [tasks]);
 
-  const addTask = useCallback((title: string, description?: string) => {
+  const addTask = useCallback((title: string, description?: string, dueDate?: number) => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) return; // never persist an empty title
     const trimmedDescription = description?.trim();
@@ -74,6 +74,8 @@ function useTasksState(): UseTasks {
       description: trimmedDescription ? trimmedDescription : undefined,
       completed: false,
       createdAt: Date.now(),
+      // Optional due date (Phase 4); undefined keeps the task undated.
+      dueDate: typeof dueDate === 'number' ? dueDate : undefined,
     };
     setTasks((prev) => [task, ...prev]);
   }, []);

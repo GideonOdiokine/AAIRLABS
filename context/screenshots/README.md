@@ -1,6 +1,6 @@
 # Context Screenshots
 
-This folder mirrors the `context/screenshots/` convention from the `web-app` project. It is for **design references and spec visuals** used while building (e.g. mockups, annotated states).
+This folder is for **design references and spec visuals** used while building (e.g. mockups, annotated states).
 
 No design mockups were provided for the AAIRLABS exercise, so this folder starts empty aside from this note. Drop reference images here if you sketch or receive any.
 

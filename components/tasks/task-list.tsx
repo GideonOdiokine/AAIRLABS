@@ -2,6 +2,7 @@
  * TaskList — FlatList wrapper that renders task rows, or the empty state when
  * there are none. Presentational: it forwards toggle/delete intent upward.
  */
+import type { ReactNode } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { EmptyState } from '@/components/tasks/empty-state';
@@ -13,11 +14,13 @@ type TaskListProps = {
   tasks: Task[];
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  /** Rendered when `tasks` is empty; defaults to the standard empty state. */
+  emptyState?: ReactNode;
 };
 
-export function TaskList({ tasks, onToggle, onDelete }: TaskListProps) {
+export function TaskList({ tasks, onToggle, onDelete, emptyState }: TaskListProps) {
   if (tasks.length === 0) {
-    return <EmptyState />;
+    return <>{emptyState ?? <EmptyState />}</>;
   }
 
   return (
