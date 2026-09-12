@@ -5,7 +5,6 @@ complete, and delete tasks; browse them on one screen; keep them across launches
 and dictate new tasks by voice through a floating action button.
 
 ## Features
-
 - **Task list** — a single scrollable list with a clear completed / incomplete
   distinction (checked, muted, strikethrough) and an intentional empty state.
 - **Add / complete / delete** — a dedicated, validated Add Task screen (empty
