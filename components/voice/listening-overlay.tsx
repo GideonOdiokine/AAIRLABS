@@ -1,14 +1,3 @@
-/**
- * ListeningOverlay — the visual states of the voice pipeline.
- *
- * Presentational only: it renders whatever `state` the VoiceFab is in and
- * forwards user intents (stop, cancel, dismiss, retry) back up. It owns no
- * recording or transcription logic.
- *
- * States: listening (recording, user can stop or cancel), processing
- * (transcribing/splitting), denied (mic permission refused), error
- * (transcription failed or empty). Idle renders nothing.
- */
 import { useEffect, useRef } from 'react';
 import {
   AccessibilityInfo,
@@ -25,22 +14,16 @@ import { ThemedText } from '@/components/themed-text';
 import { Radius, Spacing } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-/** The voice pipeline's UI state, shared with the VoiceFab that owns it. */
 export type VoiceState = 'idle' | 'listening' | 'processing' | 'denied' | 'error';
 
 type ListeningOverlayProps = {
   state: VoiceState;
-  /** Friendly, user-safe message shown in the `error` state. */
   errorMessage?: string | null;
-  /** Stop recording and start transcribing. */
   onStop: () => void;
-  /** Abandon the recording and return to idle. */
   onCancel: () => void;
-  /** Dismiss the denied/error message and return to idle. */
   onDismiss: () => void;
 };
 
-/** A gently pulsing red dot signalling active recording (respects reduced motion). */
 function RecordingDot({ color }: { color: string }) {
   const pulse = useRef(new Animated.Value(1)).current;
 
@@ -49,7 +32,7 @@ function RecordingDot({ color }: { color: string }) {
     let loop: Animated.CompositeAnimation | undefined;
 
     AccessibilityInfo.isReduceMotionEnabled().then((reduced) => {
-      if (cancelled || reduced) return; // hold steady when reduced motion is on
+      if (cancelled || reduced) return; // hold steady under reduced motion
       loop = Animated.loop(
         Animated.sequence([
           Animated.timing(pulse, { toValue: 0.4, duration: 700, useNativeDriver: true }),
@@ -81,7 +64,7 @@ export function ListeningOverlay({
   const primary = useThemeColor({}, 'tint');
   const danger = useThemeColor({}, 'danger');
 
-  // Keep the sheet's content clear of the home indicator / bottom safe area.
+  // Keep the sheet clear of the home indicator and bottom safe area.
   const insets = useSafeAreaInsets();
 
   const visible = state !== 'idle';

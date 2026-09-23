@@ -1,9 +1,3 @@
-/**
- * EmptyState — shown when the list has nothing to render. An intentional, calm
- * placeholder rather than a blank screen. Defaults to the "no tasks yet" copy,
- * but accepts overrides so the list can show a distinct "no matches" state when
- * a search/filter hides everything (Phase 4 bonus).
- */
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';

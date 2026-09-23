@@ -1,10 +1,3 @@
-/**
- * TextField — a labeled text input with an optional inline error message.
- *
- * Presentational: colors come from the theme, all input behavior is forwarded
- * to the underlying RN `TextInput`. Used by the Add Task screen for the title
- * and description fields.
- */
 import { forwardRef } from 'react';
 import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
@@ -14,7 +7,6 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 
 type TextFieldProps = TextInputProps & {
   label: string;
-  /** Inline error message shown under the field; also flags the border. */
   error?: string;
 };
 

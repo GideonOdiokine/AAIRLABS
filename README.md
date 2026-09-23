@@ -13,7 +13,7 @@ and dictate new tasks by voice through a floating action button.
   restored on relaunch. No backend, no account.
 - **Voice input** — a mic FAB records a phrase, transcribes it (Groq Whisper), and
   splits natural dictation ("buy provisions and call mom") into separate tasks.
-- **Bonus (Phase 4):**
+- **Extras:**
   - **Due dates + sorting** — pick a due date on Add Task; the list sorts dated
     tasks first (soonest due at top) and shows an amber "due soon" / red "overdue" badge.
   - **Search & filter** — search by title/description and filter All / Active / Done.
@@ -88,15 +88,16 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-> **SDK note:** this project is pinned to **Expo SDK 54** (see `AGENTS.md`). Do not
-> bump the SDK without changing the toolchain.
+> **SDK note:** this project is pinned to **Expo SDK 54**. The available iOS
+> simulator caps out at iOS 16.2, and SDK 54's Expo Go is the newest that
+> installs there, so bumping the SDK means changing the toolchain too.
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
 ## Tests
 
-Unit tests cover the highest-value pure logic — the voice task splitter, the
-due-date helpers, and the storage round-trip / corrupt-data fallback:
+Unit tests cover the pure logic: the voice task splitter, the due-date helpers,
+and the storage round-trip plus its corrupt-data fallback:
 
 ```bash
 npm test

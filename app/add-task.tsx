@@ -1,10 +1,3 @@
-/**
- * Add Task Screen — a dedicated, validated form pushed on top of the list.
- *
- * Thin by design: it owns only local form state and delegates persistence to
- * the shared `useTasks` hook. Save appends the task and returns to the list;
- * cancel (and the back gesture) discards and returns unchanged.
- */
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -30,9 +23,8 @@ export default function AddTaskScreen() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  // Optional due date (Phase 4 bonus); null means undated.
   const [dueDate, setDueDate] = useState<number | null>(null);
-  // Error is only surfaced after an attempted save, not while first typing.
+  // Only surface validation errors once the user has tried to save.
   const [error, setError] = useState<string | null>(null);
 
   const background = useThemeColor({}, 'background');
@@ -44,7 +36,6 @@ export default function AddTaskScreen() {
       setError('Please enter a task title.');
       return;
     }
-    // Description is optional; the hook trims it and stores empty as undefined.
     addTask(trimmedTitle, description, dueDate ?? undefined);
     router.back();
   };
@@ -64,7 +55,6 @@ export default function AddTaskScreen() {
           <ThemedText style={{ color: primary, fontSize: 16 }}>Cancel</ThemedText>
         </Pressable>
         <ThemedText type="defaultSemiBold">New Task</ThemedText>
-        {/* Spacer to keep the title visually centered against the Cancel action. */}
         <View style={styles.headerSpacer} />
       </View>
 
@@ -79,7 +69,7 @@ export default function AddTaskScreen() {
             value={title}
             onChangeText={(value) => {
               setTitle(value);
-              if (error) setError(null); // clear the error as soon as they fix it
+              if (error) setError(null);
             }}
             error={error ?? undefined}
             placeholder="What needs doing?"
@@ -124,7 +114,7 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
   },
   headerSpacer: {
-    width: 56, // roughly matches the Cancel label width to center the title
+    width: 56, // matches the Cancel label width so the title stays centred
   },
   form: {
     padding: Spacing.lg,
