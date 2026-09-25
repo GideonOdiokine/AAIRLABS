@@ -1,3 +1,12 @@
+/**
+ * DueDatePicker — a compact, cross-platform due-date control (Phase 4 bonus).
+ *
+ * Rather than a native-only calendar (which does not run in the web preview),
+ * this offers quick-pick day chips — Today / Tomorrow / This weekend / Next week
+ * — plus a Clear chip. It reports the chosen due date (local-midnight epoch ms)
+ * or null upward; it owns no persistence. Selecting the active chip again clears
+ * it, so the control is fully keyboard/tap reversible.
+ */
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -8,6 +17,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { dueDateOptions, formatDueDate } from '@/lib/dates';
 
 type DueDatePickerProps = {
+  /** Currently selected due date (epoch ms), or null when undated. */
   value: number | null;
   onChange: (value: number | null) => void;
 };
@@ -20,7 +30,7 @@ export function DueDatePicker({ value, onChange }: DueDatePickerProps) {
   const text = useThemeColor({}, 'text');
   const muted = useThemeColor({}, 'textMuted');
 
-  // Options are relative to now, memoized so the chips stay stable across renders.
+  // Options are relative to "now" — memoized so chips stay stable across renders.
   const options = useMemo(() => dueDateOptions(), []);
 
   return (
@@ -92,7 +102,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   chip: {
-    minHeight: 40,
+    minHeight: 40, // comfortable hit target
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.pill,

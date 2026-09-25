@@ -9,19 +9,24 @@ import {
   useResolvedColorScheme,
 } from '@/hooks/use-theme-preference';
 
+/** Inner tree — reads the resolved scheme so the in-app toggle drives chrome too. */
 function RootNavigator() {
   const colorScheme = useResolvedColorScheme();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      {/* One shared task list for every screen (list + Add Task). */}
       <TasksProvider>
+        {/* Single stack: Task List (index) is the initial route; Add Task is
+            pushed on top. Headers are handled per-screen. */}
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="add-task" options={{ presentation: 'card' }} />
         </Stack>
       </TasksProvider>
-      {/* Follow the in-app theme choice, not the OS scheme, so the bar stays
-          readable when the toggle overrides the device setting. */}
+      {/* Drive the status bar from the app's resolved scheme (not the OS) so it
+          stays readable when the in-app toggle overrides the device setting:
+          light text on the dark theme, dark text on the light theme. */}
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
   );
@@ -29,6 +34,7 @@ function RootNavigator() {
 
 export default function RootLayout() {
   return (
+    // Persisted light / dark / system choice, resolved for every color hook.
     <ThemePreferenceProvider>
       <RootNavigator />
     </ThemePreferenceProvider>

@@ -1,3 +1,10 @@
+/**
+ * Unit tests for the no-speech guard in the transcription module.
+ *
+ * Whisper hallucinates stock phrases ("Thank you", "Thanks for watching") when
+ * handed silence. `isNoSpeechHallucination` catches those so they never become
+ * junk tasks — while leaving real phrases that merely contain such words alone.
+ */
 import { isNoSpeechHallucination } from '@/lib/voice/transcribe';
 
 describe('isNoSpeechHallucination', () => {

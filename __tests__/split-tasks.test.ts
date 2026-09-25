@@ -1,3 +1,10 @@
+/**
+ * Unit tests for the voice task splitter (Phase 4 bonus).
+ *
+ * `splitTasks` is the highest-value pure function in the app — it turns free
+ * dictation into discrete titles — so it gets the fullest coverage: single vs
+ * multi-task input, each separator, leading filler, and empty/blank input.
+ */
 import { splitTasks } from '@/lib/voice/split-tasks';
 
 describe('splitTasks', () => {
@@ -21,7 +28,7 @@ describe('splitTasks', () => {
   });
 
   it('does not mis-split words that merely contain a separator (e.g. "understand")', () => {
-    // "understand" contains "and" only as a substring, so \band\b must not match.
+    // "understand" contains "and" but only as a substring — \band\b must not match it.
     expect(splitTasks('understand the brief')).toEqual(['Understand the brief']);
   });
 

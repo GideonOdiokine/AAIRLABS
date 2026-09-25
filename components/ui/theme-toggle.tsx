@@ -1,3 +1,9 @@
+/**
+ * ThemeToggle — a single header control that cycles the app theme
+ * light → dark → system (Phase 4 bonus). It reads and writes the shared
+ * `useThemePreference`; all colors already come from the theme, so this only
+ * flips the resolver.
+ */
 import { Pressable, StyleSheet } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -5,7 +11,7 @@ import { Radius, Spacing } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useThemePreference, type ThemePreference } from '@/hooks/use-theme-preference';
 
-// Material fallbacks for these SF Symbols are mapped in icon-symbol.tsx.
+// SF Symbol per preference; the Material fallbacks are mapped in icon-symbol.tsx.
 const ICON: Record<ThemePreference, 'sun.max.fill' | 'moon.fill' | 'circle.lefthalf.filled'> = {
   light: 'sun.max.fill',
   dark: 'moon.fill',

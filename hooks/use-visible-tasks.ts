@@ -1,7 +1,16 @@
+/**
+ * use-visible-tasks — derive the on-screen task list from the full list plus the
+ * active search query and status filter (Phase 4 bonus).
+ *
+ * Pure view-derivation: it filters and sorts a copy and never mutates state or
+ * touches storage, so the list screen stays thin. Sort order: dated tasks first,
+ * soonest due at the top; undated tasks after, newest first.
+ */
 import { useMemo } from 'react';
 
 import type { Task } from '@/lib/types/task';
 
+/** Which completion states to show. */
 export type TaskFilter = 'all' | 'active' | 'done';
 
 function matchesQuery(task: Task, query: string): boolean {
@@ -16,7 +25,7 @@ function matchesFilter(task: Task, filter: TaskFilter): boolean {
   return true;
 }
 
-// Dated tasks first, soonest due at the top; undated after, newest first.
+/** Dated-first (soonest due), then undated by newest created. */
 function compareTasks(a: Task, b: Task): number {
   if (a.dueDate != null && b.dueDate != null) {
     if (a.dueDate !== b.dueDate) return a.dueDate - b.dueDate;

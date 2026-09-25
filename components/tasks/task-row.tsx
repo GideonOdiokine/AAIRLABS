@@ -1,3 +1,11 @@
+/**
+ * TaskRow — renders a single task: completion toggle, title, optional
+ * description, an optional due-date badge, and a delete control. It reports
+ * intent (toggle / delete) to the parent and owns no list or storage logic.
+ *
+ * The row animates in and shifts smoothly when the list reorders (Phase 4
+ * bonus); both are skipped when the OS reduced-motion setting is on.
+ */
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, LinearTransition, useReducedMotion } from 'react-native-reanimated';
@@ -26,7 +34,7 @@ function TaskRowComponent({ task, onToggle, onDelete }: TaskRowProps) {
   const reduceMotion = useReducedMotion();
   const stateLabel = task.completed ? 'completed' : 'not completed';
 
-  // Completed rows recede, so only active tasks show due urgency.
+  // Completed tasks always recede; only active tasks surface due urgency.
   let dueColor = muted;
   if (task.dueDate != null && !task.completed) {
     const status = getDueStatus(task.dueDate);
@@ -95,7 +103,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     gap: Spacing.md,
   },
-  // Pads the toggle to a 44pt hit target without enlarging the visual box.
+  // Pads the toggle to a >=44pt hit target without enlarging the visual box.
   toggleHit: {
     padding: Spacing.sm,
     margin: -Spacing.sm,

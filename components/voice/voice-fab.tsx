@@ -1,3 +1,14 @@
+/**
+ * VoiceFab — the always-reachable voice affordance on the Task List screen.
+ *
+ * Drives the listen → transcribe → split → add pipeline and owns the UI state
+ * (idle / listening / processing / denied / error). The heavy lifting lives in
+ * `lib/voice/`: transcription in `transcribe.ts`, splitting in `split-tasks.ts`.
+ * On success it hands the split titles up via `onTasks`; the screen appends
+ * each through `useTasks`.
+ *
+ * Recording uses the SDK 54 `expo-audio` API (not the deprecated `expo-av`).
+ */
 import {
   AudioModule,
   RecordingPresets,
@@ -15,6 +26,7 @@ import { splitTasks } from '@/lib/voice/split-tasks';
 import { TranscriptionError, transcribe } from '@/lib/voice/transcribe';
 
 type VoiceFabProps = {
+  /** Called with the split task titles once transcription succeeds. */
   onTasks: (titles: string[]) => void;
 };
 
@@ -27,6 +39,7 @@ export function VoiceFab({ onTasks }: VoiceFabProps) {
   const primary = useThemeColor({}, 'tint');
   const pressedColor = useThemeColor({}, 'primaryPressed');
 
+  // Begin recording: request permission, then capture.
   const startRecording = async () => {
     try {
       const permission = await AudioModule.requestRecordingPermissionsAsync();
@@ -44,6 +57,7 @@ export function VoiceFab({ onTasks }: VoiceFabProps) {
     }
   };
 
+  // Stop recording and run the transcribe → split → add pipeline.
   const stopAndProcess = async () => {
     setState('processing');
     try {
@@ -56,6 +70,7 @@ export function VoiceFab({ onTasks }: VoiceFabProps) {
       const transcript = await transcribe(uri);
       const titles = splitTasks(transcript);
       if (titles.length === 0) {
+        // Transcript had no usable task content — add nothing.
         setErrorMessage('We didn’t catch any tasks. Please try again.');
         setState('error');
         return;
@@ -73,10 +88,12 @@ export function VoiceFab({ onTasks }: VoiceFabProps) {
     }
   };
 
+  // Abandon an in-progress recording without transcribing.
   const cancelRecording = async () => {
     try {
       await recorder.stop();
     } catch {
+      // Nothing to clean up if it never started.
     }
     setState('idle');
   };
@@ -118,12 +135,13 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 92, // clears the Add Task footer button below it
+    bottom: 92, // clears the "Add Task" footer button below it
     width: 60,
     height: 60,
     borderRadius: Radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
+    // Soft elevation so the FAB reads as the one bold affordance on the list.
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 8,

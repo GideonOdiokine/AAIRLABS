@@ -1,3 +1,8 @@
+/**
+ * TaskFilterBar — search box + All / Active / Done chips for the list screen
+ * (Phase 4 bonus). Presentational: it reports the query and filter upward and
+ * owns no list logic.
+ */
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';

@@ -1,10 +1,12 @@
 /**
- * Colors used across the app, defined for both light and dark mode.
- * Components read from here rather than hardcoding hex values.
+ * Below are the colors that are used in the app, defined for both light and dark mode.
+ * This project styles with React Native StyleSheet + these theme tokens (see the
+ * coding standards); components read colors from here rather than hardcoding hex.
  */
 
 import { Platform } from 'react-native';
 
+// Brand blue is the single accent, per the project color system.
 const tintColorLight = '#208AEF';
 const tintColorDark = '#4FA6F5';
 
@@ -16,7 +18,7 @@ export const Colors = {
     background: '#FFFFFF',
     card: '#F7F9FC', // task row surface
     border: '#E6EAF0',
-    tint: tintColorLight, // brand blue: primary actions, FAB
+    tint: tintColorLight, // brand blue — primary actions, FAB
     primaryPressed: '#1B6FBF',
     primarySoft: '#E6F4FE', // tinted surfaces / active states
     icon: '#687076',
@@ -45,6 +47,7 @@ export const Colors = {
   },
 };
 
+/** Spacing scale (pt) — avoids one-off magic numbers in styles. */
 export const Spacing = {
   xs: 4,
   sm: 8,
@@ -54,6 +57,7 @@ export const Spacing = {
   xxl: 32,
 } as const;
 
+/** Corner radius scale (pt). */
 export const Radius = {
   sm: 8,
   md: 12,

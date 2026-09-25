@@ -1,3 +1,10 @@
+/**
+ * TaskToggle — the completion checkbox for a task row.
+ * Presentational: it renders checked/unchecked state and reports taps upward.
+ *
+ * The box fill and the check-mark animate in/out on toggle (Phase 4 bonus); the
+ * animation is skipped when the OS reduced-motion setting is on.
+ */
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -23,7 +30,7 @@ export function TaskToggle({ completed }: TaskToggleProps) {
   const inverse = theme === 'light' ? '#FFFFFF' : '#151718';
 
   const reduceMotion = useReducedMotion();
-  // 0 = empty, 1 = complete; drives both the box fill and the check.
+  // Drives both the fill and the check: 0 = empty, 1 = complete.
   const progress = useSharedValue(completed ? 1 : 0);
 
   useEffect(() => {
