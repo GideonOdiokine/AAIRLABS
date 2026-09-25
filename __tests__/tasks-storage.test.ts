@@ -1,16 +1,9 @@
-/**
- * Unit tests for task persistence (Phase 4 bonus).
- *
- * Uses the official AsyncStorage jest mock so tests run without a native
- * module. Covers the round-trip, the corrupt-data fail-safe, and the field
- * coercion that drops malformed entries rather than surfacing them.
- */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { loadTasks, saveTasks } from '@/lib/storage/tasks-storage';
 import type { Task } from '@/lib/types/task';
 
-// Swap the native module for the in-memory mock the package ships for Jest.
+// Use the in-memory AsyncStorage mock the package ships for Jest.
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
@@ -62,7 +55,7 @@ describe('tasks-storage', () => {
   it('drops malformed entries but keeps the valid ones', async () => {
     const payload = [
       sampleTask,
-      { id: 'x', title: 42 }, // wrong types — should be skipped
+      { id: 'x', title: 42 }, // wrong types, should be skipped
       null,
       { title: 'no id, completed missing' },
     ];

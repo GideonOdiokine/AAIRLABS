@@ -1,11 +1,3 @@
-/**
- * Task List Screen — the app's home and initial route.
- *
- * Thin by design: it wires the shared `useTasks` hook to presentational
- * components and owns only screen-level orchestration (loading state, delete
- * confirmation, the search/filter UI state, and the primary "Add Task" entry
- * point that navigates to the dedicated Add Task screen).
- */
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, View } from 'react-native';
@@ -26,7 +18,6 @@ import { useVisibleTasks, type TaskFilter } from '@/hooks/use-visible-tasks';
 export default function TaskListScreen() {
   const { tasks, isLoading, addTask, toggleTask, deleteTask } = useTasks();
 
-  // Search/filter UI state (Phase 4 bonus) — view-only, not persisted.
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<TaskFilter>('all');
   const visibleTasks = useVisibleTasks(tasks, query, filter);
@@ -34,8 +25,7 @@ export default function TaskListScreen() {
   const background = useThemeColor({}, 'background');
   const primary = useThemeColor({}, 'tint');
 
-  // Delete is destructive — confirm first. Alert isn't reliable on web, so fall
-  // back to window.confirm there.
+  // Alert is unreliable on web, so fall back to window.confirm there.
   const requestDelete = (id: string) => {
     const task = tasks.find((t) => t.id === id);
     const title = task ? `"${task.title}"` : 'this task';
@@ -56,11 +46,9 @@ export default function TaskListScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: background }]} edges={['top']}>
       <View style={styles.header}>
         <ThemedText type="title">Tasks</ThemedText>
-        {/* Light / dark / system theme toggle (Phase 4 bonus). */}
         <ThemeToggle />
       </View>
 
-      {/* Search + status filter — only once there are tasks to narrow. */}
       {hasTasks ? (
         <View style={styles.filterBar}>
           <TaskFilterBar
@@ -81,7 +69,7 @@ export default function TaskListScreen() {
           tasks={visibleTasks}
           onToggle={toggleTask}
           onDelete={requestDelete}
-          // Distinguish "no tasks at all" from "filter hid everything".
+          // Tell "no tasks at all" apart from "the filter hid everything".
           emptyState={
             hasTasks ? (
               <EmptyState
@@ -94,11 +82,8 @@ export default function TaskListScreen() {
         />
       )}
 
-      {/* Voice FAB — the one bold affordance, floating above the list (Phase 3).
-          Each spoken sentence is split into one or more tasks and appended. */}
       <VoiceFab onTasks={(titles) => titles.forEach((title) => addTask(title))} />
 
-      {/* Primary entry point to the dedicated Add Task screen (Phase 2). */}
       <View style={styles.footer}>
         <PrimaryButton
           label="Add Task"

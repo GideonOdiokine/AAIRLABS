@@ -10,7 +10,7 @@ export function useThemeColor(
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
-  // Resolve through the theme preference so the in-app toggle re-themes everything.
+  // Resolve through the preference so the in-app toggle re-themes everything.
   const theme = useResolvedColorScheme();
   const colorFromProps = props[theme];
 
