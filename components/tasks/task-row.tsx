@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, LinearTransition, useReducedMotion } from 'react-native-reanimated';
 
 import { TaskToggle } from '@/components/tasks/task-toggle';
@@ -20,6 +20,7 @@ function TaskRowComponent({ task, onToggle, onDelete }: TaskRowProps) {
   const card = useThemeColor({}, 'card');
   const muted = useThemeColor({}, 'textMuted');
   const body = useThemeColor({}, 'textBody');
+  const success = useThemeColor({}, 'success');
   const danger = useThemeColor({}, 'danger');
   const warning = useThemeColor({}, 'warning');
 
@@ -39,14 +40,32 @@ function TaskRowComponent({ task, onToggle, onDelete }: TaskRowProps) {
       entering={reduceMotion ? undefined : FadeInDown.duration(220)}
       layout={reduceMotion ? undefined : LinearTransition.duration(220)}
       style={[styles.row, { backgroundColor: card }]}>
-      <Pressable
-        style={styles.toggleHit}
-        onPress={() => onToggle(task.id)}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: task.completed }}
-        accessibilityLabel={`${task.title}, ${stateLabel}. Toggle completion.`}>
-        <TaskToggle completed={task.completed} />
-      </Pressable>
+      {Platform.OS === 'web' ? (
+        <label style={{ padding: Spacing.sm, margin: -Spacing.sm, display: 'flex', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            aria-label={`Toggle completion: ${task.title}`}
+            checked={task.completed}
+            onChange={() => onToggle(task.id)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                if (!event.repeat) event.currentTarget.click();
+              }
+            }}
+            style={{ width: 24, height: 24, margin: 0, accentColor: success, cursor: 'pointer' }}
+          />
+        </label>
+      ) : (
+        <Pressable
+          style={styles.toggleHit}
+          onPress={() => onToggle(task.id)}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: task.completed }}
+          accessibilityLabel={`${task.title}, ${stateLabel}. Toggle completion.`}>
+          <TaskToggle completed={task.completed} />
+        </Pressable>
+      )}
 
       <View style={styles.content}>
         <ThemedText
